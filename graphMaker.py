@@ -2,22 +2,22 @@ from random import randint
 
 class Graph:
 
-    def init(self, length = 20, start = [0, 0], end = [ -1, -1]):
+    def __init__(self, length = 20, start = [0, 0], end = [ -1, -1]):
         self.graph = self.createGraph(length, start, end)
         self.start = start
-        self.end = end
+        self.end = [length - 1, length - 1]
         self.length = length
 
     def createGraph(self, length = 20, start = [0, 0], end = [ -1, -1]):
-        graph = [[0 for c in range(length)] for r in range(length)]
+        graph = [[0 for _ in range(length)] for _ in range(length)]
         obstacles = self.createObstacles(length)
         for x, y in obstacles:
             graph[x][y] = 1
-        graph[start[0]][start[1]] = 2
-        if(end[0] == -1):
-            graph[length - 1][length - 1] = 2
-        else:
-            graph[end[0]][end[1]] = 2
+        # graph[start[0]][start[1]] = 2
+        # if(end[0] == -1):
+        #     graph[length - 1][length - 1] = 2
+        # else:
+        #     graph[end[0]][end[1]] = 2
         return graph
 
     def createObstacles(self, length):
@@ -57,8 +57,20 @@ class Graph:
                             col -= 1
                             row += 1
         return obstacles
+    
+    def getAdj(self, row, col):
+        adj = []
+        if(row > 0 and not self.seen(row - 1, col)):
+            adj.append([row - 1, col])
+        if(row < self.length - 1 and not self.seen(row + 1, col)):
+            adj.append([row + 1, col])
+        if(col > 0 and not self.seen(row, col - 1)):
+            adj.append([row, col - 1])
+        if(col < self.length - 1 and not self.seen(row, col + 1)):
+            adj.append([row, col + 1])
+        return adj
 
-    def printGraph(self):
+    def print(self):
         for row in self.graph:
             print(" ".join(str(x) for x in row))
         
@@ -70,3 +82,10 @@ class Graph:
     
     def getLength(self):
         return self.length
+    
+    def setSeen(self, row, col):
+        self.graph[row][col] = 3
+    
+    def seen(self, row, col):
+        num = self.graph[row][col]
+        return num == 3 or num == 1
